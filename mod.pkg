@@ -3,7 +3,6 @@
     "description": "Quickly start an Odin project.",
     "url": "https://github.com/blob1807/odin_start",
     "readme": "README.MD",
-	"license": "",
-	"keywords": [""],
-	"dependencies": {"":""}
+    "license": "BSD-3-Clause",
+    "keywords": ["start", "quick start", "init", "new"],
 }

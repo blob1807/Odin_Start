@@ -1,5 +1,5 @@
 Quickly start an Odin project.  
-Comes as an Odin and Python flavours.  
+Comes in Odin and Python flavours.  
 
 
 Odin Version
@@ -40,4 +40,6 @@ options:
 ```
 
 Notes:
-- If `dir src` is set then `main.odin` will be made there.
+- If `dir src` is set then `main.odin` will be made in there.
+
+This project is not affiliated with nor endorsed by The Odin Programming Language or The Python Software Foundation & their contibuters.
