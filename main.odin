@@ -70,7 +70,7 @@ Help:
   Required: 
     help, h:     Prints this help. 
     init, i:     Creates project in current directory. 
-    new. n <path>: Creates project in given directory. 
+    new, n <path>: Creates project in given directory. 
   Optional: 
     file, f [main, ols, mod, readme, license, odinfmt, gitignore, all]: 
        Creates given files. Creates main, ols & readme when not used. 
