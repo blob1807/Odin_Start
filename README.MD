@@ -1,3 +1,5 @@
+# Odin Start (ostart)
+
 Quickly start an Odin project.  
 Comes in Odin and Python flavours.  
 
@@ -19,10 +21,10 @@ Help:
        Creates given directories. Creates none when not used.
 
 Examples:
-  odin_start init
-  odin_start new bean_maker
-  odin_start -init --file main ols
-  odin_start --new "bean maker" -dir all file main
+  ostart init
+  ostart new bean_maker
+  ostart -init --file main ols
+  ostart --new "bean maker" -dir all file main
 ```
 
 Python Version
