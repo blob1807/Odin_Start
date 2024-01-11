@@ -68,8 +68,8 @@ Quickly start an Odin project.
 Help: 
   "--" or "-" can be used if desired. 
   Required: 
-    help, h:     Prints this help. 
-    init, i:     Creates project in current directory. 
+    help, h:       Prints this help. 
+    init, i:       Creates project in current directory. 
     new, n <path>: Creates project in given directory. 
   Optional: 
     file, f [main, ols, mod, readme, license, odinfmt, gitignore, all]: 
