@@ -4,8 +4,8 @@ Comes in Odin and Python flavours.
 
 Odin Version
 ```
-=== Odin Start ===m
-Quickly start an Odin project.m
+=== Odin Start ===
+Quickly start an Odin project.
 Help:
   "--" or "-" can be used if desired.
   Required:

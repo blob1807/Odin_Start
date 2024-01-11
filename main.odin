@@ -63,8 +63,8 @@ README_MD: string :`# {0}
 A cool thing that's going to change to world.
 `
 
-HELP :: `=== Odin Start ===m
-Quickly start an Odin project.m
+HELP :: `=== Odin Start ===
+Quickly start an Odin project.
 Help: 
   "--" or "-" can be used if desired. 
   Required: 
