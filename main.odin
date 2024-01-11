@@ -9,82 +9,87 @@ import "core:os"
 import str "core:strings"
 import fp "core:path/filepath"
 
-MOD_PKG: string: 
-"{\n"+
-"    \"version\": \"\", \n"+
-"    \"description\": \"\", \n"+
-"    \"url\": \"\", \n"+
-"    \"readme\": \"\", \n"+
-"    \"license\": \"\", \n"+
-"    \"keywords\": [\"\"], \n"+
-"    \"dependencies\": {\"\":\"\"} \n"+
-"}\n"
+MOD_PKG: string: `{
+    "version": "", 
+    "description": "", 
+    "url": "", 
+    "readme": "", 
+    "license": "", 
+    "keywords": [""], 
+    "dependencies": {"":""} 
+}
+`
 
-OSL_JSON: string: 
-"{{\n"+
-"    \"$schema\": \"https://raw.githubusercontent.com/DanielGavin/ols/master/misc/ols.schema.json\",\n"+
-"    \"collections\": [\n"+
-"        {{\n"+
-"            \"name\": \"core\",\n"+
-"            \"path\": \"{0}core\"\n"+
-"        }},\n"+
-"        {{\n"+
-"            \"name\": \"vendor\",\n"+
-"            \"path\": \"{0}vendor\"\n"+
-"        }}\n"+
-"    ],\n"+
-"    \"enable_document_symbols\": true,\n"+
-"    \"enable_semantic_tokens\": false,\n"+
-"    \"enable_hover\": true,\n"+
-"    \"enable_snippets\": true\n"+
-"}}\n"
+OLS_JSON: string: `{{
+    "$schema": "https://raw.githubusercontent.com/DanielGavin/ols/master/misc/ols.schema.json", 
+    "collections": [ 
+        {{ 
+            "name": "core", 
+            "path": "{0}core" 
+        }}, 
+    ], 
+    "enable_document_symbols": true, 
+    "enable_semantic_tokens": false, 
+    "enable_hover": true, 
+    "enable_snippets": true 
+}}
+`
 
-ODINFMT_JSON: string: 
-"{ \n"+
-"    \"$schema\": \"https://raw.githubusercontent.com/DanielGavin/ols/master/misc/odinfmt.schema.json\",\n "+
-"    \"character_width\": 100, \n"+
-"    \"spaces\": 4, \n"+
-"    \"newline_limit\": 2, \n"+
-"    \"tabs\": true, \n"+
-"    \"tabs_width\": 4, \n"+
-"    \"convert_do\": false, \n"+
-"    \"exp_multiline_composite_literals\": false, \n"+
-"    \"brace_style\": \"_1TBS\", \n"+
-"    \"indent_cases\": false, \n"+
-"    \"newline_style\": \"CRLF\" \n"+
-"} \n"
+ODINFMT_JSON: string: `{ 
+    "$schema": "https://raw.githubusercontent.com/DanielGavin/ols/master/misc/odinfmt.schema.json", 
+    "character_width": 100, 
+    "spaces": 4, 
+    "newline_limit": 2, 
+    "tabs": true, 
+    "tabs_width": 4, 
+    "convert_do": false, 
+    "exp_multiline_composite_literals": false, 
+    "brace_style": "_1TBS", 
+    "indent_cases": false, 
+    "newline_style": "CRLF" 
+}
+`
 
 MAIN_ODIN: string: 
-"package {0}\n \n"+
-"import \"core:fmt\"\n \n" +
-"main :: proc() {{ \n"+
-"    fmt.println(\"Hellope\") \n"+
-"}} \n"
+`package {0} 
+import "core:fmt"
 
-HELP ::
-"=== Odin Start ===\n"+
-"Quickly start an Odin project.\n"+
-"Help:\n"+
-"  \"--\" or \"-\" can be used if desired.\n"+
-"  Required:\n"+
-"    help, h:     Prints this help.\n"+
-"    init, i:     Creates project in current directory.\n"+
-"    new. n <path>: Creates project in given directory.\n"+
-"  Optional:\n"+
-"    file, f [main, osl, odinfmt, mod, all]: Creates given files. Creates all when not used.\n"+
-"    dir, d [bin, src, all]:          Creates given directories. Creates none when not used.\n\n"+
-"Examples:\n"+
-"  {0} init\n"+
-"  {0} new bean_maker\n"+
-"  {0} -init file main osl\n"+
-"  {0} --new \"bean maker\" dir all file main\n"
+main :: proc() {{ 
+    fmt.println("Hellope") 
+}}
+`
 
-Files :: bit_set[enum{Main, Osl, Odinfmt, Mod, All}]
+README_MD: string :`# {0}
+A cool thing that's going to change to world.
+`
+
+HELP :: `=== Odin Start ===m
+Quickly start an Odin project.m
+Help: 
+  "--" or "-" can be used if desired. 
+  Required: 
+    help, h:     Prints this help. 
+    init, i:     Creates project in current directory. 
+    new. n <path>: Creates project in given directory. 
+  Optional: 
+    file, f [main, ols, mod, readme, license, odinfmt, gitignore, all]: 
+       Creates given files. Creates main, ols & readme when not used. 
+    dir, d [bin, src, all]: 
+       Creates given directories. Creates none when not used.
+
+Examples: 
+  {0} init 
+  {0} new bean_maker 
+  {0} -init --file main ols 
+  {0} --new "bean maker" -dir all file main
+`
+
+Files :: bit_set[enum{Main, Ols, Odinfmt, Mod, Readme, License, Gitignore, All}]
 Dirs :: bit_set[enum{Bin, Src, All}]
 
 main :: proc() {
     assert(len(os.args) > 0, "Executable path wasn't passed by OS.")
-    assert(len(os.args) < 9, "To many arguments were given.")
+    assert(len(os.args) < 14, "To many arguments were given.")
 
     help := fmt.aprintf(HELP, fp.short_stem(fp.base(os.args[0])))
 
@@ -124,6 +129,8 @@ main :: proc() {
                 os.exit(1)
             }
             pkg_dir = fp.clean(os.args[i+1])
+            os.make_directory(pkg_dir)
+            os.set_current_directory(pkg_dir)
             setup = true
             i += 2
 
@@ -134,12 +141,16 @@ main :: proc() {
             }
             for a in os.args[i+1:] {
                 i += 1
-                switch a {
+                s, _ := str.to_lower(a)
+                switch s {
                 case "mod", "mod.pkg"         : files += {.Mod}
                 case "main", "main.odin"      : files += {.Main}
-                case "osl", "osl.json"        : files += {.Osl}
+                case "osl", "osl.json"        : files += {.Ols}
                 case "odinfmt", "odinfmt.json": files += {.Odinfmt}
-                case "all": files = {.Main, .Osl, .Odinfmt, .Mod}; break
+                case "readme", "readme.md"    : files += {.Readme}
+                case "license"                : files += {.License}
+                case "gitignore", ".gitignore": files += {.Gitignore}
+                case "all": files = {.Main, .Ols, .Odinfmt, .Mod, .Readme, .License, .Gitignore}; break
                 case: i-=1; break
                 }
             }
@@ -180,13 +191,11 @@ main :: proc() {
         fmt.eprintf("You need to provide \"init\" or \"new\".\n\n")
         os.exit(1)
     }
-    if !file_set do files = {.Main, .Osl, .Odinfmt, .Mod}
-
-    os.make_directory(pkg_dir)
-    os.set_current_directory(pkg_dir)
+    if !file_set do files = {.Main, .Ols, .Readme}
 
     w_ok: bool
-    pkg_name := fp.base(pkg_dir)
+    pkg_name, _ := str.replace_all(fp.base(pkg_dir), " ", "_")
+    pkg_name, _ = str.replace_all(pkg_name, "-", "_")
     cur_dir := os.get_current_directory()
     file_name: string
 
@@ -199,18 +208,18 @@ main :: proc() {
             file_name, _ = fp.from_slash("src/main.odin")
             w_ok = os.write_entire_file(file_name, transmute([]byte)file)
         } else {
-            w_ok = os.write_entire_file(file_name, transmute([]byte)file)
+            w_ok = os.write_entire_file("main.odin", transmute([]byte)file)
         }
         if !w_ok do fmt.eprintln("Unable to write \"main.odin\" in", cur_dir)
     }
-    if .Osl in files {
+    if .Ols in files {
         root, _ := fp.to_slash(ODIN_ROOT)
         root, _ = str.replace_all(root, "/", "//")
         root, _ = fp.from_slash(root)
-        file := fmt.aprintf(OSL_JSON, root)
+        file := fmt.aprintf(OLS_JSON, root)
 
-        w_ok = os.write_entire_file("osl.json", transmute([]byte)file)
-        if !w_ok do fmt.eprintln("Unable to write \"osl.json\" in", cur_dir)
+        w_ok = os.write_entire_file("ols.json", transmute([]byte)file)
+        if !w_ok do fmt.eprintln("Unable to write \"ols.json\" in", cur_dir)
     }
     if .Odinfmt in files {
         w_ok = os.write_entire_file("odinfmt.json", transmute([]byte)ODINFMT_JSON)
@@ -219,6 +228,21 @@ main :: proc() {
     if .Mod in files {
         w_ok = os.write_entire_file("mod.pkg", transmute([]byte)MOD_PKG)
         if !w_ok do fmt.eprintln("Unable to write \"mod.pkg\" in", cur_dir)
+    }
+    if .Readme in files {
+        file := fmt.aprintf(README_MD, str.to_lower(pkg_name))
+        w_ok = os.write_entire_file("README.MD", transmute([]byte)file)
+        if !w_ok do fmt.eprintln("Unable to write \"README.MD\" in", cur_dir)
+    }
+    if .License in files {
+        t: []byte
+        w_ok = os.write_entire_file("LICENSE", t)
+        if !w_ok do fmt.eprintln("Unable to write \"LICENSE\" in", cur_dir)
+    }
+    if .Gitignore in files {
+        t: []byte
+        w_ok = os.write_entire_file(".gitignore", t)
+        if !w_ok do fmt.eprintln("Unable to write \".gitignore\" in", cur_dir)
     }
 
     fmt.printf("Project \"{0}\" created in {1}", pkg_name, cur_dir)
@@ -254,5 +278,4 @@ main :: proc() {
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
 *****************************************************************************/

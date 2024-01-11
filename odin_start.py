@@ -4,7 +4,7 @@
 * Copyright (c) 2023 blob1807. All rights reserved.
 ***************************************************
 """
-import argparse, os, sys
+import argparse, os, sys, platform
 from pathlib import Path
 
 
@@ -18,17 +18,13 @@ MOD_PKG = """{
     "dependencies": {"":""}
 }\n"""
 
-OSL_JSON =  """{{
+OLS_JSON =  """{{
     "$schema": "https://raw.githubusercontent.com/DanielGavin/ols/master/misc/ols.schema.json",
     "collections": [
         {{
             "name": "core",
             "path": "{0}core"
         }},
-        {{
-            "name": "vendor",
-            "path": "{0}vendor"
-        }}
     ],
     "enable_document_symbols": true,
     "enable_semantic_tokens": false,
@@ -58,19 +54,24 @@ main :: proc() {{
     fmt.println("Hellope")
 }}\n"""
 
+README_MD = """# {0}
+A cool thing that's going to change to world.
+\n"""
+
 
 def main():
     ap = argparse.ArgumentParser(
         prog="Odin_Start.py",
         description="Quickly start an Odin project.")
     setup = ap.add_mutually_exclusive_group(required=True)
-    setup.add_argument("-i","--init", action="store_true", help="Creates project in current directory.")
-    setup.add_argument("-n","--new", nargs=1, metavar="PATH", help="Creates project in given directory.")
+    setup.add_argument("-i","--init", action="store_true", help="creates project in current directory.")
+    setup.add_argument("-n","--new", nargs=1, metavar="PATH", help="creates project in given directory.")
 
-    ap.add_argument("-f", "--file", nargs="+", choices=["main", "osl", "odinfmt", "mod", "all"], default=[],
-                    help="Creates given files. Creates all when not used.")
+    ap.add_argument("-f", "--file", nargs="+", 
+                    choices=["main", "ols", "odinfmt", "mod", "readme", "license", "gitignore", "all"], default=[],
+                    help="creates given files. creates main, ols & readme when not used. ")
     ap.add_argument("-d", "--dir", nargs="+", choices=["bin", "src", "all"], default=[],
-                    help="Creates given directories. Creates none when not used.")
+                    help="creates given directories. creates none when not used.")
     if len(sys.argv) == 1:
         ap.print_help()
         return
@@ -82,13 +83,12 @@ def main():
     else:
         for p in os.getenv("PATH").split(";"):
             p1 = Path(p).stem.lower()
-            if p1 == "odin":
-                odin_root = p.replace("/", "\\")
-                odin_root = odin_root.replace("\\", "\\\\") + "\\\\"
-                break
-            elif "odin" in p1:
-                odin_root = p.replace("/", "\\")
-                odin_root = odin_root.replace("\\", "\\\\") + "\\\\"
+            if "odin" in p1:
+                odin_root = p.replace("\\", "/")+"/"
+                if platform.system() == "Windows":
+                    odin_root = odin_root.replace("/", "\\\\")
+                if p1 == "odin":
+                    break
 
     if not odin_root:
         print("Unable to find Odin's path.")
@@ -103,8 +103,10 @@ def main():
         if not Path(pkg_name).exists():
             Path.mkdir(pkg_name)
     
-    if not args.file or "all" in args.file:
-        args.file = ["main", "osl", "odinfmt", "mod"]
+    if not args.file:
+        args.file = ["main", "ols", "readme"]
+    elif "all" in args.file:
+        args.file = ["main", "ols", "odinfmt", "mod", "readme", "license", "gitignore"]
     if "all" in args.dir:
         args.dir = ["bin", "src"]
 
@@ -117,11 +119,17 @@ def main():
         path = curr_dir/"src" if "src" in args.dir else curr_dir
         Path(path/"main.odin").write_text(MAIN_ODIN.format(pkg_name))
     if "osl" in args.file:
-        Path(curr_dir/"osl.json").write_text(OSL_JSON.format(odin_root))
+        Path(curr_dir/"ols.json").write_text(OLS_JSON.format(odin_root))
     if "odinfmt" in args.file:
         Path(curr_dir/"odinfmt.json").write_text(ODINFMT_JSON)
     if "mod" in args.file:
         Path(curr_dir/"mod.pkg").write_text(MOD_PKG)
+    if "readme" in args.file:
+        Path(curr_dir/"README.MD").write_text(README_MD.format(pkg_name))
+    if "license" in args.file:
+        Path(curr_dir/"license").write_text("")
+    if "gitignore" in args.file:
+        Path(curr_dir/".gitignore").write_text("")
     
     return
     

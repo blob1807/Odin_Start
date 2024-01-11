@@ -1,5 +1,6 @@
 .vscode
 *.json
+*.exe
 bin
 test
 test_dir

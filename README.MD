@@ -4,39 +4,41 @@ Comes in Odin and Python flavours.
 
 Odin Version
 ```
-=== Odin Start ===
-Quickly start an Odin project.
+=== Odin Start ===m
+Quickly start an Odin project.m
 Help:
   "--" or "-" can be used if desired.
   Required:
-    help, h:       Prints this help.
-    init, i:       Creates project in current directory.
-    new, n <path>: Creates project in given directory.
+    help, h:     Prints this help.
+    init, i:     Creates project in current directory.
+    new. n <path>: Creates project in given directory.
   Optional:
-    file, f [main, osl, odinfmt, mod, all]: Creates given files. Creates all when not used.
-    dir, d [bin, src, all]:          Creates given directories. Creates none when not used.
+    file, f [main, ols, mod, readme, license, odinfmt, gitignore, all]:
+       Creates given files. Creates main, ols & readme when not used.
+    dir, d [bin, src, all]:
+       Creates given directories. Creates none when not used.
 
 Examples:
   odin_start init
   odin_start new bean_maker
-  odin_start -init file main osl
-  odin_start --new "bean maker" dir all file main
+  odin_start -init --file main ols
+  odin_start --new "bean maker" -dir all file main
 ```
 
 Python Version
 ```
-usage: Odin Start [-h] (-i | -n PATH) [-f {main,osl,odinfmt,mod,all} [{main,osl,odinfmt,mod,all} ...]] [-d {bin,src,all} [{bin,src,all} ...]]
+usage: Odin_Start.py [-h] (-i | -n PATH) [-f {main,ols,odinfmt,mod,readme,license,gitignore,all} [{main,ols,odinfmt,mod,readme,license,gitignore,all} ...]] [-d {bin,src,all} [{bin,src,all} ...]]
 
-Quickly start a Odin project.
+Quickly start an Odin project.
 
 options:
   -h, --help            show this help message and exit
-  -i, --init            Creates project in current directory.
-  -n PATH, --new PATH   Creates project in given directory.
-  -f {main,osl,odinfmt,mod,all} [{main,osl,odinfmt,mod,all} ...], --file {main,osl,odinfmt,mod,all} [{main,osl,odinfmt,mod,all} ...]
-                        Creates given files. Creates all when not used.
+  -i, --init            creates project in current directory.
+  -n PATH, --new PATH   creates project in given directory.
+  -f {main,ols,odinfmt,mod,readme,license,gitignore,all} [{main,ols,odinfmt,mod,readme,license,gitignore,all} ...], --file {main,ols,odinfmt,mod,readme,license,gitignore,all} [{main,ols,odinfmt,mod,readme,license,gitignore,all} ...]
+                        creates given files. creates main, ols & readme when not used.
   -d {bin,src,all} [{bin,src,all} ...], --dir {bin,src,all} [{bin,src,all} ...]
-                        Creates given directories. Creates none when not used.
+                        creates given directories. creates none when not used.
 ```
 
 Notes:
