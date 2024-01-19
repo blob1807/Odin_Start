@@ -1,6 +1,6 @@
 """
 **************************************************
-* License At Bottem
+* License At Bottom
 * Copyright (c) 2023 blob1807. All rights reserved.
 ***************************************************
 """
@@ -24,7 +24,7 @@ OLS_JSON =  """{{
         {{
             "name": "core",
             "path": "{0}core"
-        }},
+        }}
     ],
     "enable_document_symbols": true,
     "enable_semantic_tokens": false,
@@ -72,27 +72,13 @@ def main():
                     help="creates given files. creates main, ols & readme when not used. ")
     ap.add_argument("-d", "--dir", nargs="+", choices=["bin", "src", "all"], default=[],
                     help="creates given directories. creates none when not used.")
+    ap.add_argument("-l", "--license", nargs="?", default="", metavar="PATH or FILE",
+                    help="looks for a license at the path or a file in Odin Start's dir. looks for a 'LICENSE' file, if nothing is provided. then addes it to the 'license' file. does nothing if not used.")
+
     if len(sys.argv) == 1:
         ap.print_help()
         return
     args = ap.parse_args()
-
-    odin_root = ""
-    if os.getenv("ODIN_ROOT"):
-        odin_root = os.getenv("ODIN_ROOT")
-    else:
-        for p in os.getenv("PATH").split(";"):
-            p1 = Path(p).stem.lower()
-            if "odin" in p1:
-                odin_root = p.replace("\\", "/")+"/"
-                if platform.system() == "Windows":
-                    odin_root = odin_root.replace("/", "\\\\")
-                if p1 == "odin":
-                    break
-
-    if not odin_root:
-        print("Unable to find Odin's path.")
-        odin_root = "<path to odin>"
 
     if args.init:
         curr_dir = Path.cwd()
@@ -118,19 +104,50 @@ def main():
     if "main" in args.file:
         path = curr_dir/"src" if "src" in args.dir else curr_dir
         Path(path/"main.odin").write_text(MAIN_ODIN.format(pkg_name))
-    if "osl" in args.file:
-        Path(curr_dir/"ols.json").write_text(OLS_JSON.format(odin_root))
     if "odinfmt" in args.file:
         Path(curr_dir/"odinfmt.json").write_text(ODINFMT_JSON)
     if "mod" in args.file:
         Path(curr_dir/"mod.pkg").write_text(MOD_PKG)
     if "readme" in args.file:
         Path(curr_dir/"README.MD").write_text(README_MD.format(pkg_name))
-    if "license" in args.file:
-        Path(curr_dir/"license").write_text("")
     if "gitignore" in args.file:
         Path(curr_dir/".gitignore").write_text("")
     
+    if "osl" in args.file:
+        odin_root = ""
+        if os.getenv("ODIN_ROOT"):
+            odin_root = os.getenv("ODIN_ROOT")
+        else:
+            for p in os.getenv("PATH").split(";"):
+                p1 = Path(p).stem.lower()
+                if "odin" in p1:
+                    odin_root = p.replace("\\", "/")+"/"
+                    if platform.system() == "Windows":
+                        odin_root = odin_root.replace("/", "\\\\")
+                    if p1 == "odin":
+                        break
+
+        if not odin_root:
+            print("Unable to find Odin's path.")
+            odin_root = "<path to odin>"
+        else:
+            print(f"Found Odin in: {odin_root}")
+            
+        Path(curr_dir/"ols.json").write_text(OLS_JSON.format(odin_root))
+
+    if "license" in args.file:
+        license = ""
+        if args.license != "":
+            lice_file = Path("LICENSE")
+            if args.license != None:
+                lice_file = Path(args.license)
+            if not lice_file.exists():
+                print("Unable able to find")
+            else:
+                license = lice_file.read_text()
+        Path(curr_dir/"license").write_text(license)
+    
+    print(f"Project \"{pkg_name}\" created in {path}")
     return
     
 
