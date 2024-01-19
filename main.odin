@@ -1,11 +1,12 @@
 /**************************************************
-* License At Bottem
+* License At Bottom
 * Copyright (c) 2023 blob1807. All rights reserved.
 ***************************************************/
 package odinstart
 
 import "core:fmt"
 import "core:os"
+import "core:slice"
 import str "core:strings"
 import fp "core:path/filepath"
 
@@ -26,7 +27,7 @@ OLS_JSON: string: `{{
         {{ 
             "name": "core", 
             "path": "{0}core" 
-        }}, 
+        }}
     ], 
     "enable_document_symbols": true, 
     "enable_semantic_tokens": false, 
@@ -52,6 +53,7 @@ ODINFMT_JSON: string: `{
 
 MAIN_ODIN: string: 
 `package {0} 
+
 import "core:fmt"
 
 main :: proc() {{ 
@@ -73,23 +75,31 @@ Help:
     new, n <path>: Creates project in given directory. 
   Optional: 
     file, f [main, ols, mod, readme, license, odinfmt, gitignore, all]: 
-       Creates given files. Creates main, ols & readme when not used. 
+       Creates given files. Creates main, ols & readme if not used. 
     dir, d [bin, src, all]: 
-       Creates given directories. Creates none when not used.
+       Creates given directories. Creates none if not used.
+    license, l <path> or <file name>
+       Looks for a license at the path or a file in {0}'s dir. 
+       Looks for a 'LICENSE' file, if nothing is provided.
+       Then addes it to the 'license' file. Does nothing if not used.
 
 Examples: 
   {0} init 
   {0} new bean_maker 
   {0} -init --file main ols 
   {0} --new "bean maker" -dir all file main
+  {0} i license bsd3
+  {0} n "cakes" f license main l
 `
 
 Files :: bit_set[enum{Main, Ols, Odinfmt, Mod, Readme, License, Gitignore, All}]
 Dirs :: bit_set[enum{Bin, Src, All}]
+License: string
+Params := [?]string{"help", "h", "init", "i", "new", "n", "file", "f", "dir", "d", "l"}
 
 main :: proc() {
     assert(len(os.args) > 0, "Executable path wasn't passed by OS.")
-    assert(len(os.args) < 14, "To many arguments were given.")
+    assert(len(os.args) <= 16, "To many arguments were given.")
 
     help := fmt.aprintf(HELP, fp.short_stem(fp.base(os.args[0])))
 
@@ -98,8 +108,8 @@ main :: proc() {
         return
     }
 
-    pkg_dir, arg: string
-    setup, file_set, dir_set: bool
+    pkg_dir, arg, lic_file: string
+    setup, file_set, dir_set, lic_set: bool
     files: Files
     dirs: Dirs
 
@@ -133,6 +143,28 @@ main :: proc() {
             os.set_current_directory(pkg_dir)
             setup = true
             i += 2
+        
+        case "license", "licence", "l":
+            if lic_set {
+                fmt.eprintln("\"license\" has already been provided\n")
+                os.exit(1)
+            }
+
+            if len(os.args) == i+1 ||  slice.contains(Params[:], str.trim_left(os.args[i+1], "-")){
+                lic_file = str.join({fp.dir(os.args[0]), "LICENSE"}, "/")
+                i += 1
+            } else {
+                lic_file = str.join({fp.dir(os.args[0]), fp.clean(os.args[i+1])}, "/")
+                i += 2
+            }
+
+            if !os.exists(lic_file) {
+                fmt.eprintln("Unable to find the provided file:\n", lic_file, "\n")
+                os.exit(1)
+            }
+            fmt.println("Found license file:", lic_file)
+            lic_set = true
+            
 
         case "file", "f":
             if file_set {
@@ -217,6 +249,7 @@ main :: proc() {
         root, _ = str.replace_all(root, "/", "//")
         root, _ = fp.from_slash(root)
         file := fmt.aprintf(OLS_JSON, root)
+        fmt.println("Found Odin in:", root)
 
         w_ok = os.write_entire_file("ols.json", transmute([]byte)file)
         if !w_ok do fmt.eprintln("Unable to write \"ols.json\" in", cur_dir)
@@ -236,6 +269,11 @@ main :: proc() {
     }
     if .License in files {
         t: []byte
+        if lic_set {
+            tt, r_ok := os.read_entire_file_from_filename(lic_file)
+            if !r_ok do fmt.eprintf("Unable to read file \"{0}\"\n", lic_file)
+            t = tt
+        }
         w_ok = os.write_entire_file("LICENSE", t)
         if !w_ok do fmt.eprintln("Unable to write \"LICENSE\" in", cur_dir)
     }
