@@ -29,6 +29,8 @@ Examples:
   ostart new bean_maker
   ostart -init --file main ols
   ostart --new "bean maker" -dir all file main
+  ostart i license bsd3.txt
+  ostart n "cakes" f license main l
 ```
 
 Python Version

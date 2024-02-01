@@ -88,7 +88,7 @@ Examples:
   {0} new bean_maker 
   {0} -init --file main ols 
   {0} --new "bean maker" -dir all file main
-  {0} i license bsd3
+  {0} i license bsd3.txt
   {0} n "cakes" f license main l
 `
 
