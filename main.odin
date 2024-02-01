@@ -150,7 +150,8 @@ main :: proc() {
                 os.exit(1)
             }
 
-            if len(os.args) == i+1 ||  slice.contains(Params[:], str.trim_left(os.args[i+1], "-")){
+            if len(os.args) == i+1 || slice.contains(Params[:], str.trim_left(os.args[i+1], "-")) {
+                // if no path or name prvided use 'LICENSE'
                 lic_file = str.join({fp.dir(os.args[0]), "LICENSE"}, "/")
                 i += 1
             } else {
