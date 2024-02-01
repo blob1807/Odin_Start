@@ -141,8 +141,11 @@ def main():
             lice_file = Path("LICENSE")
             if args.license != None:
                 lice_file = Path(args.license)
+            elif not lice_file.exists():
+                lice_file = Path("LICENCE")
+
             if not lice_file.exists():
-                print("Unable able to find")
+                print(f"Unable to find the file:\n{lice_file}\n")
             else:
                 license = lice_file.read_text()
         Path(curr_dir/"license").write_text(license)

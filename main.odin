@@ -108,6 +108,7 @@ main :: proc() {
         return
     }
 
+    ostart_dir := fp.dir(os.args[0])
     pkg_dir, arg, lic_file: string
     setup, file_set, dir_set, lic_set: bool
     files: Files
@@ -152,17 +153,20 @@ main :: proc() {
 
             if len(os.args) == i+1 || slice.contains(Params[:], str.trim_left(os.args[i+1], "-")) {
                 // if no path or name prvided use 'LICENSE'
-                lic_file = str.join({fp.dir(os.args[0]), "LICENSE"}, "/")
+                lic_file = str.join({ostart_dir, "LICENSE"}, "/")
+                if !os.exists(lic_file) {
+                    lic_file = str.join({ostart_dir, "LICENCE"}, "/")
+                }
                 i += 1
             } else {
-                lic_file = str.join({fp.dir(os.args[0]), fp.clean(os.args[i+1])}, "/")
+                lic_file = str.join({ostart_dir, fp.clean(os.args[i+1])}, "/")
                 i += 2
             }
-
             if !os.exists(lic_file) {
-                fmt.eprintln("Unable to find the provided file:\n", lic_file, "\n")
+                fmt.eprintln("Unable to find the file:\n", lic_file, "\n")
                 os.exit(1)
             }
+
             fmt.println("Found license file:", lic_file)
             lic_set = true
             
@@ -183,7 +187,7 @@ main :: proc() {
                 case "readme", "readme.md"    : files += {.Readme}
                 case "license"                : files += {.License}
                 case "gitignore", ".gitignore": files += {.Gitignore}
-                case "all": files = {.Main, .Ols, .Odinfmt, .Mod, .Readme, .License, .Gitignore}; break
+                case "all": files = {.Mod, .Main, .Ols, .Odinfmt, .Readme, .License, .Gitignore}; break
                 case: i-=1; break
                 }
             }
